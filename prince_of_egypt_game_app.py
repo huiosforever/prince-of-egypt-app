@@ -1,3 +1,4 @@
+
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -24,25 +25,38 @@ if not firebase_admin._apps:
 # Connect to Firestore
 db = firestore.client()
 
-# Title
-st.title("Prince of Egypt – Interactive Adventure")
+# Title with themed emoji
+st.markdown("<h1 style='text-align: center;'>🧺 Prince of Egypt – Adventure Game 🌟</h1>", unsafe_allow_html=True)
+
+# Fun image at the top
+st.image("https://upload.wikimedia.org/wikipedia/en/d/dc/Prince_of_Egypt_poster.png", caption="What a journey! Let's learn about Moses.", use_column_width=True)
+
+# Play sound effect
+st.audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", format="audio/mp3")
 
 # User Info
-name = st.text_input("Enter your name", "")
+st.subheader("👋 What's your name?")
+name = st.text_input("Type your name below 👇", "")
+
+# Today's date
 date = datetime.now().strftime("%Y-%m-%d")
 
 # Questions
-q1 = st.radio("1. What did Moses see in the desert?",
-              ["A lion", "A burning bush", "A giant pyramid"])
+st.markdown("### 🔥 What did Moses see in the desert?")
+q1 = st.radio("", ["A lion", "A burning bush", "A giant pyramid"])
 
-q2 = st.text_area("2. What was the message God gave to Moses?")
+st.markdown("### 📜 What was the message God gave to Moses?")
+q2 = st.text_area("Write it in your own words!")
 
-q3 = st.text_input("3. What does 'God said, I will be with you' mean to you?")
+st.markdown("### 💬 What does 'God said, I will be with you' mean to YOU?")
+q3 = st.text_input("Type your answer")
 
-drawing = st.file_uploader("Upload your drawing of your favorite scene", type=["jpg", "png"])
+# Optional drawing upload
+st.markdown("### 🎨 Draw your favorite scene!")
+drawing = st.file_uploader("Upload a picture if you drew something from the movie!", type=["jpg", "png"])
 
 # Save Button
-if st.button("Save My Answers"):
+if st.button("✅ Save My Answers"):
     if name.strip() == "":
         st.warning("Please enter your name.")
     else:
@@ -53,15 +67,15 @@ if st.button("Save My Answers"):
             "question_2": q2,
             "question_3": q3
         })
-        st.success("Your answers have been saved!")
+        st.success("🎉 Great job! Your answers were saved.")
 
 # Load Previous
 if name.strip() != "":
     doc = db.collection("prince_of_egypt_quiz").document(name).get()
     if doc.exists:
-        st.subheader("Your Previous Answers")
+        st.markdown("### 📖 Your Previous Answers")
         data = doc.to_dict()
-        st.write("**Date:**", data.get("date"))
-        st.write("**1. Desert Vision:**", data.get("question_1"))
-        st.write("**2. God's Message:**", data.get("question_2"))
-        st.write("**3. Verse Meaning:**", data.get("question_3"))
+        st.write("**📅 Date:**", data.get("date"))
+        st.write("**🔥 What did Moses see?**", data.get("question_1"))
+        st.write("**📜 God's message:**", data.get("question_2"))
+        st.write("**💬 What it means to you:**", data.get("question_3"))
